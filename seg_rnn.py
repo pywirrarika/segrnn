@@ -2,38 +2,16 @@ import argparse
 import numpy as np
 import random
 import time
+import sys
 
 import torch
 import torch.autograd as autograd
 import torch.nn as nn
 import torch.nn.functional as F
 
-# Constants from C++ code
-EMBEDDING_DIM = 64 + 1
-LAYERS_1 = 2
-LAYERS_2 = 1
-INPUT_DIM = 64 + 1
-XCRIBE_DIM = 24
-SEG_DIM = 24
-H1DIM = 32
-H2DIM = 32
-TAG_DIM = 32
-DURATION_DIM = 4
-DROPOUT = 0.0
-
-# lstm builder: LAYERS, XCRIBE_DIM, SEG_DIM, m?
-# (layers, input_dim, hidden_dim, model)
-
-DATA_MAX_SEG_LEN = 15
-
-MAX_SENTENCE_LEN = 32
-MINIBATCH_SIZE = 64
-BATCH_SIZE = 256
-
-use_max_sentence_len_training = True
-use_bucket_training = False
-
-LABELS = ['DET', 'AUX', 'ADJ', 'ADP', 'VERB', 'NOUN', 'SYM', 'PROPN', 'PART', 'X', 'CCONJ', 'PRON', 'ADV', 'PUNCT', 'NUM', 'BLANK']
+from config import *
+from preproc import parse_embedding, parse_file
+from evaluate import eval_f1
 
 def logsumexp(inputs, dim=None, keepdim=False):
         return (inputs - F.log_softmax(inputs)).mean(dim, keepdim=keepdim)
@@ -204,65 +182,6 @@ class SegRNN(nn.Module):
             cur_pos -= log_alphas[cur_pos][1]
         return list(reversed(ret))
 
-def parse_embedding(embed_filename):
-    embed_file = open(embed_filename)
-    embedding = dict()
-    for line in embed_file:
-        values = line.split()
-        values.append(1.0)
-        embedding[values[0]] = np.array(values[1:]).astype(np.float)
-    return embedding
-
-def parse_file(train_filename, embedding, use_max_len=True):
-    train_file = open(train_filename)
-    sentences = []
-    labels = []
-    label = []
-    POS_labels = set()
-    sentence = ""
-    label_sum = 0
-    for line in train_file:
-        if line.startswith("# text = "):
-            sentence = line[9:].strip().replace(" ", "")
-            N = len(sentence)
-            if use_max_len:
-                max_len = MAX_SENTENCE_LEN
-            else:
-                max_len = N
-            sentence_vec = np.zeros((max_len, EMBEDDING_DIM))
-            for i in range(min(N, max_len)):
-                c = sentence[i]
-                if c in embedding:
-                    sentence_vec[i, :] = embedding[c]
-                elif c in "0123456789":
-                    sentence_vec[i, :] = embedding["<NUM>"]
-                else:
-                    sentence_vec[i, :] = embedding["<unk>"]
-            sentences.append(sentence_vec)
-        elif not line.startswith("#"):
-            parts = line.split()
-            if len(parts) < 4:
-                if len(sentence) != 0:
-                    while label_sum < max_len:
-                        label_len = 1
-                        label_sum += label_len
-                        label.append(('BLANK', label_len))
-                    labels.append((label, sentence))
-                label = []
-                label_sum = 0
-                sentence = ""
-            else:
-                if (label_sum + len(parts[1])) <= max_len:
-                    label_sum += len(parts[1])
-                    label.append((parts[3], len(parts[1])))
-                else:
-                    label_len = max_len - label_sum
-                    if label_len > 0:
-                        label.append((parts[3], label_len))
-                        label_sum = max_len
-
-    return sentences, labels
-
 def count_correct_labels(predicted, gold):
     correct_count = 0
     predicted_set = set()
@@ -279,36 +198,6 @@ def count_correct_labels(predicted, gold):
         chars += l
     return correct_count
 
-def eval_f1(seg_rnn, pairs, write_to_file=True):
-    gold_segs = 0
-    predicted_segs = 0
-    correct_segs = 0
-    for idx, (datum, (gold_label, sentence)) in enumerate(pairs):
-        if idx % 25 == 0:
-            print("eval ", idx)
-        predicted_label = seg_rnn.infer(datum.reshape(len(sentence), 1, EMBEDDING_DIM))
-        predicted_segs += len(predicted_label)
-        gold_segs += len(gold_label)
-        correct_segs += count_correct_labels(predicted_label, gold_label)
-    if predicted_segs > 0:
-        precision = correct_segs / predicted_segs
-    else:
-        precision = 0.0
-    print("Precision: ", precision)
-    if gold_segs > 0:
-        recall = correct_segs / gold_segs
-    else:
-        recall = 0.0
-    print("Recall: ", recall)
-    if precision > 0 and recall > 0:
-        f1 = 2.0 / (1.0 / precision + 1.0 / recall)
-    else:
-        f1 = 0.0
-    print("F1: " , f1)
-    if write_to_file:
-        f = open("eval_scores.txt", "a+")
-        f.write("%f %f %f\n" % (precision, recall, f1))
-        f.close()
 
 # Main function
 if __name__ == "__main__":
@@ -321,8 +210,13 @@ if __name__ == "__main__":
     parser.add_argument('--evalModel', help='Evaluate this model')
     args = parser.parse_args()
 
-    embedding = parse_embedding(args.embed)
-    print("Done parsing embedding")
+    if args.embed:
+        embedding = parse_embedding(args.embed)
+        print("Done parsing embedding")
+    else:
+        embedding = False
+        print("Training without char embeddings")
+
 
     if args.test is not None:
         test_data, test_labels = parse_file(args.test, embedding, False)

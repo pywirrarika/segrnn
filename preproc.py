@@ -1,3 +1,6 @@
+import numpy as np
+from config import *
+
 def parse_embedding(embed_filename):
     embed_file = open(embed_filename)
     embedding = dict()
