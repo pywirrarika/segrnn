@@ -1,16 +1,16 @@
 import argparse
-import numpy as np
 import random
 import time
 import sys
 
+import numpy as np
 import torch
 import torch.autograd as autograd
 import torch.nn as nn
 import torch.nn.functional as F
 
 from config import *
-from preproc import parse_embedding, parse_file
+from preproc import parse_embedding, parse_embedding_fake, parse_file
 from evaluate import eval_f1
 
 def logsumexp(inputs, dim=None, keepdim=False):
@@ -214,7 +214,7 @@ if __name__ == "__main__":
         embedding = parse_embedding(args.embed)
         print("Done parsing embedding")
     else:
-        embedding = False
+        embedding = parse_embedding_fake(args.embed)
         print("Training without char embeddings")
 
 
