@@ -39,6 +39,8 @@ if __name__ == "__main__":
     parser.add_argument('--model', help='Saved model')
     parser.add_argument('--lr', help='Learning rate (default=0.01)')
     parser.add_argument('--evalModel', help='Evaluate this model')
+    parser.add_argument('--morph', action='store_true')
+
     args = parser.parse_args()
 
     if args.embed:
@@ -50,7 +52,10 @@ if __name__ == "__main__":
 
 
     if args.test is not None:
-        test_data, test_labels = parse_file(args.test, embedding, False)
+        if args.morph:
+            test_data, test_labels = parse_morph_langid_file(args.test, embedding, False)
+        else:
+            test_data, test_labels = parse_file(args.test, embedding, False)
         test_pairs = list(zip(test_data, test_labels))
         print("Done parsing testing data")
 
@@ -60,7 +65,11 @@ if __name__ == "__main__":
         import sys
         sys.exit(0)
 
-    data, labels = parse_file(args.train, embedding, use_max_sentence_len_training)
+    if args.morph:
+        data, labels = parse_morph_langid_file(args.train, embedding, use_max_sentence_len_training)
+    else:
+        data, labels = parse_file(args.train, embedding, use_max_sentence_len_training)
+
     pairs = list(zip(data, labels))
     # pairs = pairs[0:250]
     print("Done parsing training data")

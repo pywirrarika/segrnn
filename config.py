@@ -23,6 +23,7 @@ BATCH_SIZE = 256
 use_max_sentence_len_training = True
 use_bucket_training = False
 
-LABELS = ['DET', 'AUX', 'ADJ', 'ADP', 'VERB', 'NOUN', 'SYM', 'PROPN', 'PART', 'X', 'CCONJ', 'PRON', 'ADV', 'PUNCT', 'NUM', 'BLANK']
+#LABELS = ['DET', 'AUX', 'ADJ', 'ADP', 'VERB', 'NOUN', 'SYM', 'PROPN', 'PART', 'X', 'CCONJ', 'PRON', 'ADV', 'PUNCT', 'NUM', 'BLANK']
+LABELS = ['TR', 'DE', 'LANG3', 'MIXED', 'OTHER', 'NE', 'NE.TR', 'NE.MIXED', 'NE.DE', 'AMBIGuous',]
 
 
