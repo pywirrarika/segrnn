@@ -82,14 +82,17 @@ def parse_file(train_filename, embedding, use_max_len=True):
                         label.append((parts[3], label_len))
                         label_sum = max_len
 
+    print("Sentences:",sentences[:10])
+    print("Labels:",labels[:10])
     return sentences, labels
 
-def parse_morf_langid_file(train_filename, embedding, use_max_len=True):
+def parse_morph_langid_file(train_filename, embedding, use_max_len=True):
+    print("Parsing morphology/langid file...")
     train_file = open(train_filename)
     sentences = []
     labels = []
     label = []
-    POS_labels = set()
+    LID_labels = set()
     sentence = ""
     label_sum = 0
     for line in train_file:
