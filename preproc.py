@@ -63,6 +63,12 @@ def parse_file(train_filename, embedding, use_max_len=True):
             sentences.append(sentence_vec)
         elif not line.startswith("#"):
             parts = line.split()
+            N = len(sentence)
+            if use_max_len:
+                max_len = MAX_SENTENCE_LEN
+            else:
+                max_len = N
+ 
             if len(parts) < 4:
                 if len(sentence) != 0:
                     while label_sum < max_len:
