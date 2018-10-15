@@ -133,7 +133,9 @@ if __name__ == "__main__":
                 sentence_len = len(bucket_pairs[i][1][1])
                 pred = seg_rnn.infer(batch_data[0:sentence_len, 0, np.newaxis, :])
                 gold = bucket_pairs[i][1][0]
+                print('Prediction:')
                 print(pred)
+                print('Gold:')
                 print(gold)
                 print(bucket_pairs[i][1][1], sentence_len)
                 sentence_unk = ""
