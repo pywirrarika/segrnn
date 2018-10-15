@@ -25,7 +25,7 @@ use_bucket_training = False
 
 LABELS = [
     'DET', 'AUX', 'ADJ', 'ADP', 'VERB', 'NOUN', 'SYM', 'PROPN', 'PART', 'X', 'CCONJ', 'PRON', 'ADV', 'PUNCT', 'NUM', 'BLANK',#POS TAGS
-    'TR', 'DE', 'LANG3', 'MIXED', 'OTHER', 'NE', 'NE.TR', 'NE.MIXED', 'NE.DE', 'AMBIGuous', #LANGID TAGS
+    'TR', 'DE', 'LANG3', 'MIXED', 'OTHER', 'NE', 'NE.TR', 'NE.MIXED', 'NE.DE', 'NE.LANG3', 'AMBIGuous', #LANGID TAGS
     ]
 
 

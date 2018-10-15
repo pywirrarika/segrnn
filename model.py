@@ -92,9 +92,9 @@ class SegRNN(nn.Module):
                 z_val = self.Z_encoding[length - 1]
                 seg_encoding = torch.cat([forward_val, backward_val, y_val, z_val], 2)
                 print(seg_encoding.size)
-                indiv += self.W(self.Phi(self.V(seg_encoding)))
+                indiv += self.W(self.Phi(self.V(seg_encoding)))[0][0]
                 chars += length
-            loss -= indiv
+            loss -= indiv[0]
         return loss
 
     def _precalc(self, data):
