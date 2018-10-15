@@ -120,8 +120,8 @@ if __name__ == "__main__":
                 batch_data[:, idx, :] = datum[0:max_len, :]
                 batch_labels.append(label)
             loss = seg_rnn.calc_loss(batch_data, batch_labels)
-            print("LOSS:", loss)
-            sum_loss = loss.data[0]
+            print("LOSS:", loss.item())
+            sum_loss = loss.item()
             count = 1.0 * batch_size
             loss.backward()
 
