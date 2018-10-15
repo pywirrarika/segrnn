@@ -50,8 +50,8 @@ class SegRNN(nn.Module):
 
     def calc_loss(self, batch_data, batch_label):
         N, B, K = batch_data.shape
-        print(B, len(batch_label))
-        print(N, B, K)
+        #print(B, len(batch_label))
+        #print(N, B, K)
         forward_precalc, backward_precalc = self._precalc(batch_data)
 
         log_alphas = [autograd.Variable(torch.zeros((1, B, 1)))]
@@ -91,7 +91,7 @@ class SegRNN(nn.Module):
                 y_val = self.Y_encoding[LABELS.index(tag)]
                 z_val = self.Z_encoding[length - 1]
                 seg_encoding = torch.cat([forward_val, backward_val, y_val, z_val], 2)
-                print(seg_encoding.size)
+                #print(seg_encoding.size)
                 indiv += self.W(self.Phi(self.V(seg_encoding)))[0][0]
                 chars += length
             loss -= indiv[0]
