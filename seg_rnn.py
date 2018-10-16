@@ -2,6 +2,7 @@ import argparse
 import random
 import time
 import sys
+import os
 
 import numpy as np
 import torch
@@ -37,6 +38,7 @@ if __name__ == "__main__":
     parser.add_argument('--test', help='Test file')
     parser.add_argument('--embed', help='Character embedding file')
     parser.add_argument('--model', help='Saved model')
+    parser.add_argument('--modelPath', help='Models Path')
     parser.add_argument('--lr', help='Learning rate (default=0.01)')
     parser.add_argument('--evalModel', help='Evaluate this model')
     parser.add_argument('--morph', action='store_true')
@@ -60,26 +62,39 @@ if __name__ == "__main__":
         print("Done parsing testing data")
 
     if args.evalModel is not None:
+
         eval_rnn = torch.load(args.evalModel)
         eval_f1(eval_rnn, test_pairs, False)
-        import sys
         sys.exit(0)
 
     if args.morph:
+        print("Using morphology task parser")
         data, labels = parse_morph_langid_file(args.train, embedding, use_max_sentence_len_training)
     else:
+        print("Using CONLL UD parser")
         data, labels = parse_file(args.train, embedding, use_max_sentence_len_training)
 
     pairs = list(zip(data, labels))
     # pairs = pairs[0:250]
     print("Done parsing training data")
 
+
+    if args.modelPath is not None:
+        modelPath = args.modelPath
+        print("Using model path:", modelPath)
+    else:
+        modelPath = "."
+
     if args.model is not None:
-        seg_rnn = torch.load(args.model)
+        model_path = os.path.join(modelPath, args.model)
+        print("Loading Model " + model_path)
+        seg_rnn = torch.load(model_path)
+        sys.exit()
     else:
         seg_rnn = SegRNN()
 
     if args.lr is not None:
+        print("Using Learning rate:", args.lr)
         learning_rate = float(args.lr)
     else:
         learning_rate = 0.01
@@ -155,7 +170,9 @@ if __name__ == "__main__":
             end_time = time.time()
             print("Took ", end_time - start_time, " to run ", MINIBATCH_SIZE, " training sentences")
 
+        # Serialize Model
         if args.test is not None:
-            torch.save(seg_rnn, "seg_rnn_correct_" + str(batch_num) + ".pt")
-            #if (batch_num + 1) % 40 == 0:
-            #    eval_f1(seg_rnn, test_pairs)
+            model_file_name = prefix + str(batch_num) + ".pt"
+            torch.save(seg_rnn, os.path.join(args.modelPath, model_file_name))
+            if (batch_num + 1) % 40 == 0:
+                eval_f1(seg_rnn, test_pairs)

@@ -23,9 +23,11 @@ BATCH_SIZE = 256
 use_max_sentence_len_training = True
 use_bucket_training = False
 
+
+prefix = "srnn_model"
+
 LABELS = [
     'DET', 'AUX', 'ADJ', 'ADP', 'VERB', 'NOUN', 'SYM', 'PROPN', 'PART', 'X', 'CCONJ', 'PRON', 'ADV', 'PUNCT', 'NUM', 'BLANK',#POS TAGS
-    'TR', 'DE', 'LANG3', 'MIXED', 'OTHER', 'NE', 'NE.TR', 'NE.MIXED', 'NE.DE', 'NE.LANG3', 'AMBIGuous', #LANGID TAGS
+    'TR', 'DE', 'LANG3', 'MIXED', 'OTHER', 'NE', 'NE.TR', 'NE.MIXED', 'NE.DE', 'NE.LANG3', 'AMBIGuous', 'NE.AMBIG', 'NE.OTHER', 'AMBIG' #LANGID TAGS
     ]
-
 
