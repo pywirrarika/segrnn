@@ -28,6 +28,7 @@ prefix = "srnn_model"
 
 LABELS = [
     'DET', 'AUX', 'ADJ', 'ADP', 'VERB', 'NOUN', 'SYM', 'PROPN', 'PART', 'X', 'CCONJ', 'PRON', 'ADV', 'PUNCT', 'NUM', 'BLANK',#POS TAGS
-    'TR', 'DE', 'LANG3', 'MIXED', 'OTHER', 'NE', 'NE.TR', 'NE.MIXED', 'NE.DE', 'NE.LANG3', 'AMBIGuous', 'NE.AMBIG', 'NE.OTHER', 'AMBIG' #LANGID TAGS
+#    'TR', 'DE', 'LANG3', 'MIXED', 'OTHER', 'NE', 'NE.TR', 'NE.MIXED', 'NE.DE', 'NE.LANG3', 'AMBIGuous', 'NE.AMBIG', 'NE.OTHER', 'AMBIG' #LANGID TAGS
+    'AMBIG', 'TR', 'DE', 'LANG3', 'MIXED', 'OTHER', 'NE', 'NE.OTHER', 'NE.TR', 'NE.MIXED', 'NE.DE', 'NE.LANG3', 'NE.AMBIG', 'AMBIGuous', #LANGID TAGS
     ]
 

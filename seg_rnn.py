@@ -135,8 +135,8 @@ if __name__ == "__main__":
                 batch_data[:, idx, :] = datum[0:max_len, :]
                 batch_labels.append(label)
             loss = seg_rnn.calc_loss(batch_data, batch_labels)
-            print("LOSS:", loss)
-            sum_loss = loss.data[0]
+            print("LOSS:", loss.item())
+            sum_loss = loss.item()
             count = 1.0 * batch_size
             loss.backward()
 
@@ -148,7 +148,9 @@ if __name__ == "__main__":
                 sentence_len = len(bucket_pairs[i][1][1])
                 pred = seg_rnn.infer(batch_data[0:sentence_len, 0, np.newaxis, :])
                 gold = bucket_pairs[i][1][0]
+                print('Prediction:')
                 print(pred)
+                print('Gold:')
                 print(gold)
                 print(bucket_pairs[i][1][1], sentence_len)
                 sentence_unk = ""
