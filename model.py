@@ -88,7 +88,11 @@ class SegRNN(nn.Module):
                     break
                 forward_val = forward_precalc[chars][chars + length - 1][:, batch_idx, np.newaxis, :]
                 backward_val = backward_precalc[chars][chars + length - 1][:, batch_idx, np.newaxis, :]
-                y_val = self.Y_encoding[LABELS.index(tag)]
+                try:
+                    y_val = self.Y_encoding[LABELS.index(tag)]
+                except:
+                    print("Error:",tag)
+                    y_val = self.Y_encoding[LABELS.index('UNK')]
                 z_val = self.Z_encoding[length - 1]
                 seg_encoding = torch.cat([forward_val, backward_val, y_val, z_val], 2)
                 #print(seg_encoding.size)

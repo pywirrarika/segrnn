@@ -20,7 +20,7 @@ def parse_embedding_fake(embed_filename):
     print("Generating random embeddings")
     embedding = dict()
     embedding['<unk>'] = np.random.uniform(-1,0,EMBEDDING_DIM)
-    embedding['<NUM>'] = np.random.uniform(-1,0,EMBEDDING_DIM)
+    embedding['<num>'] = np.random.uniform(-1,0,EMBEDDING_DIM)
     for i in range(sys.maxunicode): 
         try:
             embedding[chr(i)] = np.random.uniform(-1,0,EMBEDDING_DIM)
@@ -38,9 +38,9 @@ def parse_file(train_filename, embedding, use_max_len=True):
     print("Parsing UD file...")
     train_file = open(train_filename)
     sentences = []
+    sentences_chars = []
     labels = []
     label = []
-    POS_labels = set()
     sentence = ""
     label_sum = 0
     for line in train_file:
@@ -54,13 +54,15 @@ def parse_file(train_filename, embedding, use_max_len=True):
             sentence_vec = np.zeros((max_len, EMBEDDING_DIM))
             for i in range(min(N, max_len)):
                 c = sentence[i]
-                if c in embedding:
+                if c in "0123456789":
+                    sentence_vec[i, :] = embedding["<num>"]
+                elif c in embedding:
                     sentence_vec[i, :] = embedding[c]
-                elif c in "0123456789":
-                    sentence_vec[i, :] = embedding["<NUM>"]
                 else:
                     sentence_vec[i, :] = embedding["<unk>"]
             sentences.append(sentence_vec)
+            sentences_chars.append(c)
+
         elif not line.startswith("#"):
             parts = line.split()
             N = len(sentence)
@@ -89,8 +91,8 @@ def parse_file(train_filename, embedding, use_max_len=True):
                         label.append((parts[3], label_len))
                         label_sum = max_len
 
-    print("Sentences:",sentences[:10])
-    print("Labels:",labels[:10])
+    print("Sentences:",sentences[:2])
+    print("Labels:",labels[:2])
     return sentences, labels
 
 def parse_morph_langid_file(train_filename, embedding, use_max_len=True):
@@ -109,9 +111,11 @@ def parse_morph_langid_file(train_filename, embedding, use_max_len=True):
         segs = line[1].split()
 
         if len(tags) != len(segs):
-            print(tags)
-            print(segs)
+            print("ERROR:", tags, segs)
             continue
+        
+        if len(tags) > 1:
+            print(segs, tags)
 
         labs = list()
 
@@ -132,13 +136,13 @@ def parse_morph_langid_file(train_filename, embedding, use_max_len=True):
             if c in embedding:
                 sentence_vec[i, :] = embedding[c]
             elif c in "0123456789":
-                sentence_vec[i, :] = embedding["<NUM>"]
+                sentence_vec[i, :] = embedding["<num>"]
             else:
                 sentence_vec[i, :] = embedding["<unk>"]
         sentences.append(sentence_vec)
 
-    print("Sentences:",sentences[:10])
-    print("Labels:",labels[:10])
+    print("Sentences:",sentences[0])
+    print("Labels:",labels[0])
  
     return sentences, labels
 
