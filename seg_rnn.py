@@ -91,8 +91,13 @@ if __name__ == "__main__":
     correct_count = 0.0
     sum_gold = 0.0
     sum_pred = 0.0
-    for batch_num in range(1000):
+
+    # Start training
+    for batch_num in range(EPOCHS):
+
+        print("Epoch:", batch_num) 
         random.shuffle(pairs)
+
         if use_bucket_training:
 
             bucket_pairs = pairs[0:BATCH_SIZE]
@@ -137,15 +142,15 @@ if __name__ == "__main__":
 
             seg_rnn.eval()
             print("Batch ", batch_num, " datapoint ", i, " avg loss ", sum_loss / count)
-            if i % 16 == 0:
+            if i % EVAL_EACH_EPOCH == 0:
                 sentence_len = len(bucket_pairs[i][1][1])
                 pred = seg_rnn.infer(batch_data[0:sentence_len, 0, np.newaxis, :])
                 gold = bucket_pairs[i][1][0]
-                print('Prediction:')
-                print(pred)
-                print('Gold:')
-                print(gold)
-                print(bucket_pairs[i][1][1], sentence_len)
+                #print('Prediction:')
+                #print(pred)
+                #print('Gold:')
+                #print(gold)
+                #print(bucket_pairs[i][1][1], sentence_len)
                 sentence_unk = ""
                 for c in bucket_pairs[i][1][1]:
                     sentence_unk += c if c in embedding or c in "0123456789" else "_"

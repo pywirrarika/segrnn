@@ -9,8 +9,9 @@ H1DIM = 32
 H2DIM = 32
 TAG_DIM = 32
 DURATION_DIM = 4
-DROPOUT = 0.0
-
+DROPOUT = 0.1
+EPOCHS = 2000
+EVAL_EACH_EPOCH = g0
 # lstm builder: LAYERS, XCRIBE_DIM, SEG_DIM, m?
 # (layers, input_dim, hidden_dim, model)
 
