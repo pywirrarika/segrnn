@@ -1,8 +1,8 @@
 # Constants from C++ code
-EMBEDDING_DIM = 64 + 1
+EMBEDDING_DIM = 300 + 1
 LAYERS_1 = 2
 LAYERS_2 = 1
-INPUT_DIM = 64 + 1
+INPUT_DIM = 300 + 1
 XCRIBE_DIM = 24
 SEG_DIM = 24
 H1DIM = 32
@@ -17,7 +17,7 @@ DROPOUT = 0.0
 DATA_MAX_SEG_LEN = 15
 
 MAX_SENTENCE_LEN = 32
-MINIBATCH_SIZE = 64
+MINIBATCH_SIZE = 300
 BATCH_SIZE = 256
 
 use_max_sentence_len_training = True

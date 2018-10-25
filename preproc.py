@@ -11,6 +11,10 @@ def parse_embedding(embed_filename):
         values = line.split()
         values.append(1.0)
         embedding[values[0]] = np.array(values[1:]).astype(np.float)
+
+    embedding['<unk>'] = np.random.uniform(-1,0,EMBEDDING_DIM)
+    embedding['<num>'] = np.random.uniform(-1,0,EMBEDDING_DIM)
+ 
     return embedding
 
 # Fake embeddings. We use this function if not character embeddings 

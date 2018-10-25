@@ -1,5 +1,23 @@
 from config import *
 
+def count_correct_labels(predicted, gold):
+    correct_count = 0
+    predicted_set = set()
+    chars = 0
+    for tag, l in predicted:
+        label = (tag, chars, chars + l)
+        predicted_set.add(label)
+        chars += l
+    chars = 0
+    for tag, l in gold:
+        label = (tag, chars, chars + l)
+        if label in predicted_set:
+            correct_count += 1
+        chars += l
+    return correct_count
+
+
+
 def eval_f1(seg_rnn, pairs, write_to_file=True):
     gold_segs = 0
     predicted_segs = 0

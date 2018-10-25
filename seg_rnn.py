@@ -12,24 +12,8 @@ import torch.nn.functional as F
 
 from config import *
 from preproc import parse_embedding, parse_embedding_fake, parse_file, parse_morph_langid_file
-from evaluate import eval_f1
+from evaluate import eval_f1, count_correct_labels
 from model import SegRNN
-
-def count_correct_labels(predicted, gold):
-    correct_count = 0
-    predicted_set = set()
-    chars = 0
-    for tag, l in predicted:
-        label = (tag, chars, chars + l)
-        predicted_set.add(label)
-        chars += l
-    chars = 0
-    for tag, l in gold:
-        label = (tag, chars, chars + l)
-        if label in predicted_set:
-            correct_count += 1
-        chars += l
-    return correct_count
 
 # Main function
 if __name__ == "__main__":
@@ -138,10 +122,10 @@ if __name__ == "__main__":
             for idx, (datum, (label, sentence)) in enumerate(bucket_pairs[i:i+batch_size]):
                 batch_data[:, idx, :] = datum[0:max_len, :]
                 batch_labels.append(label)
-            print(batch_data[-1])
-            print(batch_labels)
-            print(len(batch_data),len(batch_data[0]),len(batch_data[0][0]),)
-            print(len(batch_labels))
+            #print(batch_data[-1])
+            #print(batch_labels)
+            #print(len(batch_data),len(batch_data[0]),len(batch_data[0][0]),)
+            #print(len(batch_labels))
 
             loss = seg_rnn.calc_loss(batch_data, batch_labels)
             print("LOSS:", loss.item())
