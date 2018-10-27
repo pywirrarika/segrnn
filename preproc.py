@@ -119,7 +119,8 @@ def parse_morph_langid_file(train_filename, embedding, use_max_len=True):
             continue
         
         if len(tags) > 1:
-            print(segs, tags)
+            pass
+            #print(segs, tags)
 
         labs = list()
 

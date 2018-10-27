@@ -54,7 +54,10 @@ class SegRNN(nn.Module):
         #print(N, B, K)
         forward_precalc, backward_precalc = self._precalc(batch_data)
 
-        log_alphas = [autograd.Variable(torch.zeros((1, B, 1)))]
+        if DEVICE == "cuda:0":
+            log_alphas = [autograd.Variable(torch.zeros((1, B, 1), device="cuda:0"))]
+        else:
+            log_alphas = [autograd.Variable(torch.zeros((1, B, 1)))]
         for i in range(1, N + 1):
             t_sum = []
             for j in range(max(0, i - DATA_MAX_SEG_LEN), i):
@@ -77,7 +80,7 @@ class SegRNN(nn.Module):
         loss = torch.sum(log_alphas[N])
 
         for batch_idx in range(B):
-            indiv = autograd.Variable(torch.zeros(1))
+            indiv = autograd.Variable(torch.zeros(1, device=DEVICE))
             chars = 0
             label = batch_label[batch_idx]
             for tag, length in label:
@@ -110,7 +113,11 @@ class SegRNN(nn.Module):
             torch.cat([self.forward_context_initial[1] for b in range(B)], 1)
         )
         for i in range(N):
-            next_input = autograd.Variable(torch.from_numpy(data[i, :]).float())
+            #TODO
+            if DEVICE == "cuda:0":
+                next_input = autograd.Variable(torch.from_numpy(data[i, :]).float().to(DEVICE))
+            else:
+                next_input = autograd.Variable(torch.from_numpy(data[i, :]).float())
             out, hidden = self.forward_context_lstm(next_input.view(1, B, K), hidden)
             forward_xcribe_data.append(out)
         backward_xcribe_data = []
@@ -119,7 +126,11 @@ class SegRNN(nn.Module):
             torch.cat([self.backward_context_initial[1] for b in range(B)], 1)
         )
         for i in range(N - 1, -1, -1):
-            next_input = autograd.Variable(torch.from_numpy(data[i, :]).float())
+            if DEVICE == "cuda:0":
+                next_input = autograd.Variable(torch.from_numpy(data[i, :]).float().to(DEVICE))
+            else:
+                next_input = autograd.Variable(torch.from_numpy(data[i, :]).float())
+
             out, hidden = self.backward_context_lstm(next_input.view(1, B, K), hidden)
             backward_xcribe_data.append(out)
 

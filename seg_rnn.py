@@ -57,10 +57,11 @@ if __name__ == "__main__":
     else:
         print("Using CONLL UD parser")
         data, labels = parse_file(args.train, embedding, use_max_sentence_len_training)
-
-    for instance in zip(data, labels):
-        print(len(data[0]), len(data[0][0]))
+ 
+    #for instance in zip(data, labels):
+    #    print(len(data[0]), len(data[0][0]))
     pairs = list(zip(data, labels))
+    
     print("Data dimensions:", len(pairs[0][0]))
     print("Data Size:", len(pairs))
 
@@ -91,6 +92,10 @@ if __name__ == "__main__":
     correct_count = 0.0
     sum_gold = 0.0
     sum_pred = 0.0
+    
+    device = torch.device(DEVICE)
+    seg_rnn.to(device)
+
 
     # Start training
     for batch_num in range(EPOCHS):
@@ -99,10 +104,11 @@ if __name__ == "__main__":
         random.shuffle(pairs)
 
         if use_bucket_training:
-
+            print("Bucket training")
             bucket_pairs = pairs[0:BATCH_SIZE]
             bucket_pairs.sort(key=lambda x:x[0].shape[0])
         else:
+            print("No bucket training")
             bucket_pairs = pairs
 
         for i in range(0, min(BATCH_SIZE, len(pairs)), MINIBATCH_SIZE):

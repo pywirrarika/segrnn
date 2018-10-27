@@ -1,3 +1,5 @@
+import torch
+
 # Constants from C++ code
 EMBEDDING_DIM = 300 + 1
 LAYERS_1 = 2
@@ -11,7 +13,7 @@ TAG_DIM = 32
 DURATION_DIM = 4
 DROPOUT = 0.1
 EPOCHS = 2000
-EVAL_EACH_EPOCH = g0
+EVAL_EACH_EPOCH = 20
 # lstm builder: LAYERS, XCRIBE_DIM, SEG_DIM, m?
 # (layers, input_dim, hidden_dim, model)
 
@@ -20,6 +22,8 @@ DATA_MAX_SEG_LEN = 15
 MAX_SENTENCE_LEN = 32
 MINIBATCH_SIZE = 300
 BATCH_SIZE = 256
+
+DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 use_max_sentence_len_training = True
 use_bucket_training = False
